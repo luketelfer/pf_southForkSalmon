@@ -20,6 +20,6 @@ CONTAINER="scratch/pf_southForkSalmon/parflow_latest.sif"
 module load "openmpi/gcc/64/1.10.7"
 module load "singularity/3.5.2"
 
-cd ..
+cd $basedir
 
 singularity run --bind /scratch ${CONTAINER} ${basedir}/ensemble03.tcl $rundir $runname
