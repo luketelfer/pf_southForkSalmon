@@ -10,3 +10,4 @@ output_files/
 *.DS_Store
 ._*
 parflow_latest.sif
+bash_scripts/ensemble_run/*.txt

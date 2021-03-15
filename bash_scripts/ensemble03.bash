@@ -13,9 +13,9 @@ ulimit -s unlimited
 
 rundir=$1
 runname=$2
-basedir="scratch/pf_southForkSalmon"
+basedir="/scratch/ltelfer/pf_southForkSalmon"
+CONTAINER="/scratch/ltelfer/pf_southForkSalmon/parflow_latest.sif"
 outdir="${basedir}/output_files/${rundir}/${runname}"
-CONTAINER="scratch/pf_southForkSalmon/parflow_latest.sif"
 
 module load "openmpi/gcc/64/1.10.7"
 module load "singularity/3.5.2"
