@@ -1,0 +1,12 @@
+*.ipynb_checkpoints
+__pycache__
+*.pyc
+core.*
+input_files/wrf_221/
+input_files/wrf_forcings
+input_files/*.ipynb
+*.nc
+output_files/
+*.DS_Store
+._*
+parflow_latest.sif
