@@ -11,9 +11,6 @@ def get_domain(rundir,runname):
     
     # get files
     fdom = rundir + runname + '.out.00000.nc'
-    fdem = rundir + 'sfs_dem.tif'
-    fkrassel = rundir + 'krassel2006.csv'
-    fjohnson = rundir + 'johnsoncreek2006.csv'
     
     # create dataset
     domain = xr.open_dataset(fdom,drop_variables=['perm_x','perm_y'],chunks={})
@@ -29,11 +26,6 @@ def get_domain(rundir,runname):
     # mask everything
     domain = domain * domain.mask.where(domain.mask==1).isel(z=-1)
     
-    # add variables
-    domain['elev'] = xr.DataArray(raster_arr(fdem),dims=['y','x']) * domain.mask.isel(z=-1)
-    domain['johnsoncreek'] = add_johnsoncreek(fjohnson)
-    domain['krassel'] = add_krassel(fkrassel)
-    
     # add attrs
     domain.attrs = domain_attrs
     domain.init_press.attrs = init_press_attrs
@@ -46,9 +38,6 @@ def get_domain(rundir,runname):
     domain.slopey.attrs = slopey_attrs
     domain.dz_mult.attrs = dz_mult_attrs
     domain.mask.attrs = mask_attrs
-    domain.elev.attrs = elev_attrs
-    domain.krassel.attrs = krassel_attrs
-    domain.johnsoncreek.attrs = johnsoncreek_attrs
     
     # add coords
     domain['x'] = np.arange(domain.nx) + 1
@@ -60,11 +49,11 @@ def get_domain(rundir,runname):
 def get_pf(rundir,runname,domain):
     
     # get files
-    fout = rundir + runname + '.out.00001.nc'
+    fout = sorted(glob(rundir + runname + '.out.[!CLM]*.nc'))[1:]
     findi = rundir + runname + '_indicator.pfb'
     
     # create dataset
-    ds = xr.open_dataset(fout,chunks={'z':1})
+    ds = xr.open_mfdataset(fout,chunks={'time':730})
     ds = ds.rename({
         'pressure': 'press',
         'saturation': 'satur',
@@ -102,14 +91,14 @@ def get_pf(rundir,runname,domain):
 def get_clm(rundir,runname,domain):
     
     # get files
-    fclm = rundir + runname + '.out.CLM.00001.nc'
+    fclm = sorted(glob(rundir + runname + '.out.CLM.*.nc'))
     
     # create dataset
-    clm = xr.open_dataset(fclm,chunks={'z':1},lock=False)
+    clm = xr.open_mfdataset(fclm,chunks={'time':730})
     t_soil = clm.t_soil.pad({'z':(0,15)}).chunk({'z':1})
     clm = clm.drop_vars('t_soil').merge(t_soil)
     clm = clm.rename({'time':'t'})
-    #clm = clm.t_soil.chunk({'t':730,'z':25})
+    clm = clm.chunk({'t':730,'z':25})
     
     # mask everything
     clm = clm * domain.mask.where(domain.mask==1).isel(z=-1).values
@@ -149,16 +138,15 @@ def get_clm(rundir,runname,domain):
 def get_calc(pf,domain):
     
     # calculations (part I)
-    overlandflow = calc.overland_flow(pf,domain).chunk()
-    #surfrun = calc.surface_runoff(overlandflow,domain)
+    overlandflow = calc.overland_flow(pf,domain).chunk({'t':730})
     init_surfstor = calc.init_surface_storage(domain).chunk()
     init_subsurfstor = calc.init_subsurface_storage(domain).chunk()
     init_gwstor = calc.init_groundwater_storage(init_subsurfstor,domain).chunk()
     init_wtdepth = calc.init_water_table_depth(init_gwstor,domain).chunk()
-    surfstor = calc.surface_storage(pf,domain).chunk()
-    subsurfstor = calc.subsurface_storage(pf,domain).chunk({'z':1})
-    gwstor = calc.groundwater_storage(subsurfstor,pf).chunk({'z':1})
-    wtdepth = calc.water_table_depth(gwstor,domain).chunk()
+    surfstor = calc.surface_storage(pf,domain).chunk({'t':730})
+    subsurfstor = calc.subsurface_storage(pf,domain).chunk({'t':730})
+    gwstor = calc.groundwater_storage(subsurfstor,pf).chunk({'t':730})
+    wtdepth = calc.water_table_depth(gwstor,domain).chunk({'t':730})
     
     # create dataset (part)
     ds = xr.Dataset({
@@ -174,18 +162,18 @@ def get_calc(pf,domain):
     })
     
     # calculations (part II)
-    ds['tsurf'] = calc.total_surface_storage(ds.surfstor).chunk()
-    ds['tsubsurf'] = calc.total_subsurface_storage(ds.subsurfstor).chunk()
-    ds['tstor'] = calc.total_storage(ds.tsurf,ds.tsubsurf).chunk()
-    ds['dsurf'] = calc.change_in_surface_storage(ds.tsurf,ds.init_surfstor).chunk()
-    ds['dsubsurf'] = calc.change_in_subsurface_storage(ds.tsubsurf,ds.init_subsurfstor).chunk()
-    ds['dstor'] = calc.change_in_total_storage(ds.tstor,ds.init_surfstor,ds.init_subsurfstor).chunk()
-    ds['tevaptranssum'] = calc.total_evaptranssum(pf).chunk()
-    ds['toverlandsum'] = calc.total_overlandsum(pf).chunk()
-    ds['tflux'] = calc.pfclm_total_flux(ds.tevaptranssum,ds.toverlandsum).chunk()
-    ds['expstor'] = calc.expected_storage(ds.tstor,ds.tflux,ds.init_surfstor,ds.init_subsurfstor).chunk()
-    ds['err'] = calc.water_balance_error(ds.dstor,ds.tflux).chunk()
-    ds['perc_err'] = calc.water_balance_perc_error(ds.err,ds.expstor).chunk()
+    ds['tsurf'] = calc.total_surface_storage(ds.surfstor).chunk({'t':730})
+    ds['tsubsurf'] = calc.total_subsurface_storage(ds.subsurfstor).chunk({'t':730})
+    ds['tstor'] = calc.total_storage(ds.tsurf,ds.tsubsurf).chunk({'t':730})
+    ds['dsurf'] = calc.change_in_surface_storage(ds.tsurf,ds.init_surfstor).chunk({'t':730})
+    ds['dsubsurf'] = calc.change_in_subsurface_storage(ds.tsubsurf,ds.init_subsurfstor).chunk({'t':730})
+    ds['dstor'] = calc.change_in_total_storage(ds.tstor,ds.init_surfstor,ds.init_subsurfstor).chunk({'t':730})
+    ds['tevaptranssum'] = calc.total_evaptranssum(pf).chunk({'t':730})
+    ds['toverlandsum'] = calc.total_overlandsum(pf).chunk({'t':730})
+    ds['tflux'] = calc.pfclm_total_flux(ds.tevaptranssum,ds.toverlandsum).chunk({'t':730})
+    ds['expstor'] = calc.expected_storage(ds.tstor,ds.tflux,ds.init_surfstor,ds.init_subsurfstor).chunk({'t':730})
+    ds['err'] = calc.water_balance_error(ds.dstor,ds.tflux).chunk({'t':730})
+    ds['perc_err'] = calc.water_balance_perc_error(ds.err,ds.expstor).chunk({'t':730})
     
     # add attrs
     ds.attrs = domain_attrs
@@ -194,9 +182,6 @@ def get_calc(pf,domain):
     ds['x'] = np.arange(ds.nx) + 1
     ds['y'] = np.arange(ds.ny) + 1
     ds['z'] = np.arange(ds.nz) + 1
-    
-    # chunk
-    #ds = ds.chunk({'t':120})
     
     return ds
 

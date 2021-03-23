@@ -64,19 +64,19 @@ puts [pwd]
 set basedir [pwd]
 set rundir [lindex $argv 0]
 set runname [lindex $argv 1]
-cd output_files/${rundir}
-file mkdir $runname 
-cd $runname
+cd output_files/${rundir}/${rundir}${runname}
 #------------------------------------------------------------------------------------------------
 file copy -force ${basedir}/input_files/domain_inputs/sfs_slopex.pfb .
 file copy -force ${basedir}/input_files/domain_inputs/sfs_slopey.pfb .
 file copy -force ${basedir}/input_files/domain_inputs/sfs.pfsol .
-file copy -force ${basedir}/input_files/domain_inputs/init_clmin.dat drv_clmin.dat
+file copy -force ${basedir}/input_files/domain_inputs/rst_clmin.dat drv_clmin.dat
 file copy -force ${basedir}/input_files/domain_inputs/drv_vegp.dat .
-file copy -force ${basedir}/input_files/domain_inputs/press.init.pfb .
+file copy -force ${basedir}/input_files/domain_inputs/sfs_dem.tif .
+file copy -force ${basedir}/input_files/domain_inputs/johnsoncreek2006.csv .
+file copy -force ${basedir}/input_files/domain_inputs/krassel2006.csv .
 #------------------------------------------------------------------------------------------------
 file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${runname}_vegm.dat drv_vegm.dat
-file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${runname}_indicator.pfb .
+file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${runname}_indicator.pfb ${runname}_indicator.pfb
 #------------------------------------------------------------------------------------------------
 puts "Files Copied"
 #------------------------------------------------------------------------------------------------
@@ -521,7 +521,7 @@ pfset Solver.CLM.Print1dOut                   False
 pfset Solver.BinaryOutDir                     False
 pfset Solver.CLM.BinaryOutDir                 False
 pfset Solver.CLM.CLMDumpInterval              1
-pfset NetCDF.WriteCLM                         False
+pfset NetCDF.WriteCLM                         True
 pfset NetCDF.CLMNumStepsPerFile               730
 pfset Solver.PrintCLM                         False
 pfset Solver.WriteCLMBinary                   False
@@ -553,17 +553,17 @@ pfset Solver.CLM.SoiLayer                     7
 # 28. OUTPUT SETTINGS
 #----------------------------------------------------------------------
 pfset NetCDF.NumStepsPerFile                          730
-pfset NetCDF.WritePressure                            False
-pfset NetCDF.WriteSaturation                          False
-pfset NetCDF.WriteMannings                            False
-pfset NetCDF.WriteSubsurface                          False
-pfset NetCDF.WriteSlopes                              False
-pfset NetCDF.WriteMask                                False
-pfset NetCDF.WriteDZMultiplier                        False
-pfset NetCDF.WriteEvapTrans                           False
-pfset NetCDF.WriteEvapTransSum                        False
-pfset NetCDF.WriteOverlandSum                         False
-pfset Solver.PrintPressure                            True
+pfset NetCDF.WritePressure                            True
+pfset NetCDF.WriteSaturation                          True
+pfset NetCDF.WriteMannings                            True
+pfset NetCDF.WriteSubsurface                          True
+pfset NetCDF.WriteSlopes                              True
+pfset NetCDF.WriteMask                                True
+pfset NetCDF.WriteDZMultiplier                        True
+pfset NetCDF.WriteEvapTrans                           True
+pfset NetCDF.WriteEvapTransSum                        True
+pfset NetCDF.WriteOverlandSum                         True
+pfset Solver.PrintPressure                            False
 #----------------------------------------------------------------------
 pfset NetCDF.WriteOverlandBCFlux                      False
 pfset Solver.PrintDZMultiplier                        False

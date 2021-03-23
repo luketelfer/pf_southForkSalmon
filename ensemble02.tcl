@@ -70,7 +70,6 @@ file copy -force ${basedir}/input_files/domain_inputs/sfs_slopey.pfb .
 file copy -force ${basedir}/input_files/domain_inputs/sfs.pfsol .
 file copy -force ${basedir}/input_files/domain_inputs/rst_clmin.dat drv_clmin.dat
 file copy -force ${basedir}/input_files/domain_inputs/drv_vegp.dat .
-file copy -force ${basedir}/input_files/domain_inputs/press.init.pfb .
 #------------------------------------------------------------------------------------------------
 file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${runname}_vegm.dat drv_vegm.dat
 file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${runname}_indicator.pfb .
@@ -497,7 +496,7 @@ pfset Solver.Linear.Preconditioner                       PFMG
 pfset Solver.Linear.Preconditioner.PCMatrixType          FullJacobian
 #---------------------------------------------------------------------
 pfset Solver.MaxIter                                     1000000
-pfset Solver.MaxConvergenceFailures                      10
+pfset Solver.MaxConvergenceFailures                      5
 pfset Solver.Linear.KrylovDimension                      500
 pfset Solver.Linear.MaxRestarts                          20
 pfset Solver.Nonlinear.MaxIter                           200
@@ -528,7 +527,7 @@ pfset Solver.CLM.SingleFile                   True
 pfset Solver.CLM.ReuseCount                   1
 #------------------------------------------------------------------------------------------------
 pfset Solver.CLM.MetFileName                  WRF
-pfset Solver.CLM.MetFilePath                  ${basedir}/input_files/wrf_221/
+pfset Solver.CLM.MetFilePath                  ${basedir}/input_files/wrf_forcings/
 pfset Solver.CLM.MetForcing                   3D
 pfset Solver.CLM.MetFileNT                    24
 pfset Solver.CLM.IstepStart                   1

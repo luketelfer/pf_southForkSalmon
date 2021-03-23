@@ -62,29 +62,17 @@ pfset Process.Topology.R        1
 #------------------------------------------------------------------------------------------------
 set basedir [pwd]
 set rundir [lindex $argv 0]
-set control [lindex $argv 1]
-set batch [lindex $argv 2]
-set runname ${batch}${control}
-cd output_files/${rundir}
-file mkdir ${runname}
-cd $runname
+set runname [lindex $argv 1]
+cd output_files/${rundir}/${runname}
 #------------------------------------------------------------------------------------------------
 file copy -force ${basedir}/input_files/domain_inputs/sfs_slopex.pfb .
 file copy -force ${basedir}/input_files/domain_inputs/sfs_slopey.pfb .
 file copy -force ${basedir}/input_files/domain_inputs/sfs.pfsol .
 file copy -force ${basedir}/input_files/domain_inputs/rst_clmin.dat drv_clmin.dat
 file copy -force ${basedir}/input_files/domain_inputs/drv_vegp.dat .
-file copy -force ${basedir}/input_files/domain_inputs/press.init.pfb .
-file copy -force ${basedir}/input_files/domain_inputs/clm.rst.00000.0 .
-file copy -force ${basedir}/input_files/domain_inputs/clm.rst.00000.1 .
-file copy -force ${basedir}/input_files/domain_inputs/clm.rst.00000.2 .
-file copy -force ${basedir}/input_files/domain_inputs/clm.rst.00000.3 .
-file copy -force ${basedir}/input_files/domain_inputs/sfs_dem.tif .
-file copy -force ${basedir}/input_files/domain_inputs/johnsoncreek2006.csv .
-file copy -force ${basedir}/input_files/domain_inputs/krassel2006.csv .
 #------------------------------------------------------------------------------------------------
-file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${control}_vegm.dat drv_vegm.dat
-file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${control}_indicator.pfb ${runname}_indicator.pfb
+file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${runname}_vegm.dat drv_vegm.dat
+file copy -force ${basedir}/input_files/ensemble_inputs/${rundir}/${runname}_indicator.pfb .
 #------------------------------------------------------------------------------------------------
 puts "Files Copied"
 #------------------------------------------------------------------------------------------------
@@ -508,7 +496,7 @@ pfset Solver.Linear.Preconditioner                       PFMG
 pfset Solver.Linear.Preconditioner.PCMatrixType          FullJacobian
 #---------------------------------------------------------------------
 pfset Solver.MaxIter                                     1000000
-pfset Solver.MaxConvergenceFailures                      10
+pfset Solver.MaxConvergenceFailures                      7
 pfset Solver.Linear.KrylovDimension                      500
 pfset Solver.Linear.MaxRestarts                          20
 pfset Solver.Nonlinear.MaxIter                           200
@@ -529,7 +517,7 @@ pfset Solver.CLM.Print1dOut                   False
 pfset Solver.BinaryOutDir                     False
 pfset Solver.CLM.BinaryOutDir                 False
 pfset Solver.CLM.CLMDumpInterval              1
-pfset NetCDF.WriteCLM                         True
+pfset NetCDF.WriteCLM                         False
 pfset NetCDF.CLMNumStepsPerFile               730
 pfset Solver.PrintCLM                         False
 pfset Solver.WriteCLMBinary                   False
@@ -539,7 +527,7 @@ pfset Solver.CLM.SingleFile                   True
 pfset Solver.CLM.ReuseCount                   1
 #------------------------------------------------------------------------------------------------
 pfset Solver.CLM.MetFileName                  WRF
-pfset Solver.CLM.MetFilePath                  ${basedir}/input_files/wrf_2006/dist_221/
+pfset Solver.CLM.MetFilePath                  ${basedir}/input_files/wrf_forcings/
 pfset Solver.CLM.MetForcing                   3D
 pfset Solver.CLM.MetFileNT                    24
 pfset Solver.CLM.IstepStart                   1
@@ -561,16 +549,16 @@ pfset Solver.CLM.SoiLayer                     7
 # 28. OUTPUT SETTINGS
 #----------------------------------------------------------------------
 pfset NetCDF.NumStepsPerFile                          730
-pfset NetCDF.WritePressure                            True
-pfset NetCDF.WriteSaturation                          True
-pfset NetCDF.WriteMannings                            True
-pfset NetCDF.WriteSubsurface                          True
-pfset NetCDF.WriteSlopes                              True
-pfset NetCDF.WriteMask                                True
-pfset NetCDF.WriteDZMultiplier                        True
-pfset NetCDF.WriteEvapTrans                           True
-pfset NetCDF.WriteEvapTransSum                        True
-pfset NetCDF.WriteOverlandSum                         True
+pfset NetCDF.WritePressure                            False
+pfset NetCDF.WriteSaturation                          False
+pfset NetCDF.WriteMannings                            False
+pfset NetCDF.WriteSubsurface                          False
+pfset NetCDF.WriteSlopes                              False
+pfset NetCDF.WriteMask                                False
+pfset NetCDF.WriteDZMultiplier                        False
+pfset NetCDF.WriteEvapTrans                           False
+pfset NetCDF.WriteEvapTransSum                        False
+pfset NetCDF.WriteOverlandSum                         False
 pfset Solver.PrintPressure                            True
 #----------------------------------------------------------------------
 pfset NetCDF.WriteOverlandBCFlux                      False

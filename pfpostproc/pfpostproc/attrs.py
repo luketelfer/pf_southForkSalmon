@@ -164,14 +164,6 @@ dstor_attrs = {
     'description': 'change in total storage (t1 - t0)',
     'units': 'm^3'
 }
-precip_attrs = {
-    'description': 'volume of precip per grid cell',
-    'units': 'm^3'
-}
-tprecip_attrs = {
-    'description': 'total volume of precip into the domain for each timestep',
-    'units': 'm^3'
-}
 tevaptranssum_attrs = {
     'description': 'total evapotranspiration/precip flux in(+)/out(-) of the domain for each timestep',
     'units': 'm^3'
@@ -277,4 +269,36 @@ krassel_attrs = {
     'xloc': 22,
     'yiloc': 69,
     'yloc': 70
+}
+shortwave_attrs = {
+    'description': 'visible or shart-wave radiation',
+    'units': 'W/m^2',
+}
+longwave_attrs = {
+    'description': 'long-wave radiation',
+    'units': 'W/m^2',
+}
+precip_attrs = {
+    'description': 'precipitation',
+    'units': 'm^3',
+}
+temp_attrs = {
+    'description': 'air temperature',
+    'units': 'K',
+}
+wind_ew_attrs = {
+    'description': 'east-west wind speed',
+    'units': 'm/s',
+}
+wind_ns_attrs = {
+    'description': 'south-north wind speed',
+    'units': 'm/s',
+}
+atm_press_attrs = {
+    'description': 'atmospheric pressure',
+    'units': 'Pa',
+}
+sp_humid_attrs = {
+    'description': 'specific humidity',
+    'units': 'kg/kg',
 }
